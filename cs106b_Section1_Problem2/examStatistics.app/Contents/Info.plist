@@ -9,13 +9,13 @@
 	<key>CFBundleDocumentTypes</key>
 	<array/>
 	<key>CFBundleExecutable</key>
-	<string>approximateArea</string>
+	<string>examStatistics</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.waveocean.approximateArea</string>
+	<string>com.waveocean.examStatistics</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>approximateArea</string>
+	<string>examStatistics</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
