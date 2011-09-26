@@ -41,10 +41,11 @@ int main() {
     string remove = "aeiou";
     
     string outString = CensorString1(text, remove);
-    CensorString2(text, remove);
     cout << "Text: " << text << endl;
     cout << "Censor: " << remove << endl;
     cout << "From 1: " << outString << endl;
+    
+    CensorString2(text, remove);
     cout << "From 2: " << text << endl;
     
     return 0;
