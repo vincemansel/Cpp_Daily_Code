@@ -6,6 +6,12 @@
 //  Copyright 2011 Wave Ocean Networks. All rights reserved.
 //
 
+/*
+ * This program approximates a quarter arc of a circle by dividing the quarter into
+ * x smaller rectangels, and summing the smaller rectangles. The width of the rects are determined by radius / Num_rects.
+ * The height is calculated by the sqrt of radius pow 2 - x power 2.
+ */
+
 #include <iostream>
 #include "genlib.h"
 #include "simpio.h"
