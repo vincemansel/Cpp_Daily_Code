@@ -45,6 +45,8 @@ int main() {
         numScores++;
     }
     
+    in.close();
+    
     scores.avg /= numScores;
     
     cout << "Scores: MIN = " << scores.min << endl;
