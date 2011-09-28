@@ -14,9 +14,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D1107260486CEB800E47090"
-               BuildableName = "chaosGame.app"
-               BlueprintName = "chaosGame"
-               ReferencedContainer = "container:chaosGame.xcodeproj">
+               BuildableName = "template.app"
+               BlueprintName = "soundexCoder"
+               ReferencedContainer = "container:soundexCoder.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -39,9 +39,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D1107260486CEB800E47090"
-            BuildableName = "chaosGame.app"
-            BlueprintName = "chaosGame"
-            ReferencedContainer = "container:chaosGame.xcodeproj">
+            BuildableName = "template.app"
+            BlueprintName = "soundexCoder"
+            ReferencedContainer = "container:soundexCoder.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D1107260486CEB800E47090"
-            BuildableName = "chaosGame.app"
-            BlueprintName = "chaosGame"
-            ReferencedContainer = "container:chaosGame.xcodeproj">
+            BuildableName = "template.app"
+            BlueprintName = "soundexCoder"
+            ReferencedContainer = "container:soundexCoder.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
