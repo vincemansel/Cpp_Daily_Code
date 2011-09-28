@@ -17,6 +17,8 @@
 #include "vector.h"
 
 void GetScores(Vector<int> &scores);
+void ReadScores(ifstream &in1, Vector<int> &scores);
+void ReadScores1(ifstream &in1, Vector<int> &scores);
 void DrawHistogram(Vector<int> &scores);
 
 int main() {
@@ -46,20 +48,46 @@ void GetScores(Vector<int> &scores) {
             break;
         }
     }
-    
+    ReadScores(in1,scores);
+    in1.close();
+}
+
+void ReadScores(ifstream &in1, Vector<int> &scores) {
+    while (true) {
+        int x;
+        in1 >> x;
+        if (in1.fail()) {
+            break; // no more lines to read
+        }
+        cout << x << endl;
+        //Input can haveletters, punctuation or whitespace, but only integers between 0 and 99 are accepted.
+        
+        if (x >= 0 && x <= 99) {
+            scores[x / 10] += 1;
+        }
+        
+    } 
+}
+
+void ReadScores1(ifstream &in1, Vector<int> &scores) {
     while (true) {
         string line;
         getline(in1, line);
+    
         if (in1.fail()) {
             break; // no more lines to read
         }
         cout << line << endl;
         //Input line must be well form. Only digits. No letters, punctuation or whitespace.
-        scores[StringToInteger(line) / 10] += 1;
+        int x = StringToInteger(line);
+        
+        if (x >= 0 && x <= 99) {
+            scores[x / 10] += 1;
+        }
+        
     } 
-    
-    in1.close();
 }
+
 
 void DrawHistogram(Vector<int> &scores) {
     
