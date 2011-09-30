@@ -36,9 +36,13 @@ bool UpdateGrid(gridLifeT &gridLife, int simMode);
 void DrawGrid(gridLifeT &gridLife) {
     int rows = gridLife.numRows();
     int cols = gridLife.numCols();
+    InitGraphics(); // Slightly faster
+    //InitLifeGraphics(rows, cols);
     for (int i = 0; i < rows; i++)
         for (int j = 0; j < cols; j++) {
-            DrawCellAt(i, j, gridLife[i][j]);
+            if (gridLife[i][j] != 0) {  // DrawCellAt is an expensive operation, CPU-wise. Only use for cells with life, not empty cells.
+                DrawCellAt(i, j, gridLife[i][j]);
+            }
         }
     //ShowGrid(gridLife);
 }
