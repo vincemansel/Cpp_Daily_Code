@@ -13,7 +13,6 @@
 #include "extgraph.h"
 #include "simpio.h"
 #include "strutils.h"
-//#include "random.h"
 #include "grid.h"
 
 #include "lifeGrid.h"
@@ -29,18 +28,18 @@ const double FrameRateMuliplier = 0.1; // Fast Simulation
 //Nullifies the fast sim when turtle mode (3 - 1 = 2) selected. 2 * 0.25 = 0.5 second updates.
 const double FrameRateAdjustment = (1 / FrameRateMuliplier) * 0.25;
 
-int CountNeighbors(gridLifeT &gridLife, int row, int col, int simMode);
 void ShowGrid(gridLifeT &gridLife);
-void PopulateHood(Grid<bool>& hood, gridLifeT &gridLife, int row, int col, int simMode);
-bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int dRow, int dCol);
-int CountNeighborsInHood(Grid<bool>& hood);
+bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int dRow, int dCol, int nRows, int nCols);
+int CheckForNeighbors(gridLifeT &gridLife, int row, int col, int simMode, int nRows, int nCols);
+bool UpdateGrid(gridLifeT &gridLife, int simMode);
 
 void DrawGrid(gridLifeT &gridLife) {
-    InitLifeGraphics(gridLife.size.row, gridLife.size.col);
-    for (int i = 0; i < gridLife.size.row; i++)
-        for (int j = 0; j < gridLife.size.col; j++)
-            DrawCellAt(i, j, gridLife.lifeGrid.getAt(i,j));
-    UpdateDisplay();
+    int rows = gridLife.numRows();
+    int cols = gridLife.numCols();
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++) {
+            DrawCellAt(i, j, gridLife[i][j]);
+        }
     //ShowGrid(gridLife);
 }
 
@@ -55,9 +54,12 @@ void RunLifeSim(int simSpeed, int simMode, gridLifeT &gridLife) {
             if (line[0] == 'q') {
                 break;
             }
-            UpdateGrid(gridLife, simMode);
+            bool isStabilized = UpdateGrid(gridLife, simMode);
             DrawGrid(gridLife);
-            
+            if (isStabilized) {
+                cout << "Colony stablized." << endl;
+                break;
+            }
         }
     }
     else {
@@ -67,9 +69,12 @@ void RunLifeSim(int simSpeed, int simMode, gridLifeT &gridLife) {
             if (MouseButtonIsDown()) {
                 break;
             }
-            //cout << "Checking frame rate adjustment" << endl;
-            UpdateGrid(gridLife, simMode);
+            bool isStabilized = UpdateGrid(gridLife, simMode);
             DrawGrid(gridLife);
+            if (isStabilized) {
+                cout << "Colony stablized." << endl;
+                break;
+            }
             Pause(frameRate);
         }
     }
@@ -82,102 +87,68 @@ void PrintCell(int point) {
 void ShowGrid(gridLifeT &gridLife) {
     //gridLife.lifeGrid.mapAll(PrintCell);
     cout << endl;
-    for (int i = 0; i < gridLife.size.row; i++) {
+    for (int i = 0; i < gridLife.numRows(); i++) {
         cout << " ";
-        for (int j = 0; j < gridLife.size.col; j++) {
-            cout << gridLife.lifeGrid[i][j];
-            string spacer = ((gridLife.lifeGrid[i][j]) > 9) ? " " : "  ";
+        for (int j = 0; j < gridLife.numCols(); j++) {
+            cout << gridLife[i][j];
+            string spacer = ((gridLife[i][j]) > 9) ? " " : "  ";
             cout << spacer;
         }
         cout << endl;
     }
 }
 
-void UpdateGrid(gridLifeT &gridLife, int simMode) {
+/*
+ * Calculates life for the next step and updates the Grid by reference based on the given simMode.
+ * Also, checks for stability of colony on-going during the update process.
+ */
+
+
+bool UpdateGrid(gridLifeT &gridLife, int simMode) {
     gridLifeT gridLife2 = gridLife;
-    for (int i = 0; i < gridLife.size.row; i++) {
-        for (int j = 0; j < gridLife.size.col; j++) {
-            int neighbors = CountNeighbors(gridLife2, i, j, simMode);
+    bool isStabilized = true;
+    int rows = gridLife.numRows();
+    int cols = gridLife.numCols();
+    
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int neighbors = CheckForNeighbors(gridLife2, i, j, simMode, rows, cols);
+            int age = gridLife[i][j];
             switch (neighbors) {
                 case 2:
-                    if (gridLife.lifeGrid[i][j] < MaxAge) {
-                        gridLife.lifeGrid[i][j] += ((gridLife.lifeGrid[i][j]) != 0) ? 1 : 0;
+                    if (age < MaxAge) {
+                        gridLife[i][j] += (age != 0) ? 1 : 0;
                     }
                     break;
                 case 3:
-                    if (gridLife.lifeGrid[i][j] < MaxAge) {
-                        gridLife.lifeGrid[i][j] += 1;
+                    if (age < MaxAge) {
+                        gridLife[i][j] += 1;
                     }
                     break;
                 default:
-                    gridLife.lifeGrid[i][j] = 0;
+                    gridLife[i][j] = 0;
                     break;
+            }
+            age = gridLife[i][j];
+            if (isStabilized && (age > 0 && age < MaxAge)) {
+                //cout << " UpdatedGrid: isStabilize false at: " << i << ":" << j << endl;
+                isStabilized = false;
             }
         }
     }
+    return isStabilized;
 }
 
-static const int hNumRows = 3;
-static const int hNumColumns = 3;
-
-void InitHood(Grid<bool>& hood){
-    for (int row = 0; row < hNumRows; row++) {
-        for (int col = 0; col < hNumColumns; col++) {
-            hood[row][col] = false;
-        }
-    }
-}
-
-void ShowHood(Grid<bool>& hood, int row, int col) {
-    cout << endl;
-    cout << "  r:c=" << row << ":" << col << endl;
-    for (int i = 0; i < hood.numRows(); i++) {
-        cout << "    ";
-        for (int j = 0; j < hood.numCols(); j++) {
-            cout << hood[i][j];
-            cout << " ";
-        }
-        cout << endl;
-    }
-}
-
-int CountNeighbors(gridLifeT &gridLife, int row, int col, int simMode) {
-    int count;
-    
-    Grid<bool> hood (hNumRows, hNumColumns);
-    //InitHood(hood);
-    PopulateHood(hood, gridLife, row, col, simMode);
-    //ShowHood(hood, row, col);
-    count = CountNeighborsInHood(hood);
-
-    return count;
-}
-
-void PopulateHood(Grid<bool>& hood, gridLifeT &gridLife, int row, int col, int simMode) {
-    
-    //cout << endl << " PopulateHood: r:c=" << row << ":" << col << endl;
+int CheckForNeighbors(gridLifeT &gridLife, int row, int col, int simMode, int nRows, int nCols) {
+    int count = 0;
     
     for (int dRow = -1; dRow <= 1; dRow++) {
         for (int dCol = -1; dCol <= 1; dCol++) {
-            hood[dRow+1][dCol+1] = IsDirectionOccupied(gridLife, row, col, dRow, dCol);
-            //cout << "  hood[" << dRow+1 << "][" << dCol+1 << "]"  <<  hood[dRow+1][dCol+1] << endl;
-        }
-    }
-}
-
-int CountNeighborsInHood(Grid<bool>& hood) {
-    int count = 0;
-    for (int row = 0; row < hNumRows; row++) {
-        for (int col = 0; col < hNumColumns; col++) {
-            if (hood[row][col] > 0 && !(row == 1 && col == 1)) { // Do not count the middle cell, only neighbors.
-                count += 1;
-                //cout << " CountNeighborsInHood: r:c:count=" << row << ":" << col << ":" << count << endl;
-            }
+            count += IsDirectionOccupied(gridLife, row, col, dRow, dCol, nRows, nCols);
         }
     }
     return count;
 }
-
 
 /**
  * Function: OnBoard
@@ -187,10 +158,9 @@ int CountNeighborsInHood(Grid<bool>& hood) {
  * specified coordinate indexes a legal entry of the lifeGrid.
  */
 
-
-bool OnBoard(int row, int col, gridSizeT size) {
-    return (row >= 0 && row < size.row &&
-            col >= 0 && col < size.col);
+bool OnBoard(int row, int col, int nRows, int nCols) {
+    return (row >= 0 && row < nRows &&
+            col >= 0 && col < nCols);
 }
 
 /**
@@ -208,17 +178,11 @@ bool OnBoard(int row, int col, gridSizeT size) {
  * to see if neighbors are adjacent.
  */
 
-
-bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int dRow, int dCol) {
-    gridSizeT size = gridLife.size;
+bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int dRow, int dCol, int nRows, int nCols) {    
     if ((dRow == 0) && (dCol == 0)) return false; // protect against bad call
     row += dRow;
     col += dCol;
-    //if (OnBoard(row, col, size)) {
-    //    int check = gridLife.lifeGrid[row][col];
-        //cout << "   IsDirectionOccupied: gridLife.lifeGrid [" << row << "][" << col << "]" << check;
-    //}
-    return (OnBoard(row, col, size) && gridLife.lifeGrid[row][col] > 0);
+    return (OnBoard(row, col, nRows, nCols) && gridLife[row][col] > 0);
 }
 
 

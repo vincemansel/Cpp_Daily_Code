@@ -14,17 +14,19 @@
 #include "grid.h"
 #include "vector.h"
 #include "lifeGrid.h"
+#include "lifeGraphics.h"
 
 #include <iostream>
 #include <fstream>
 
 const bool TEST_CASE = true;
 const bool TEST_RANDOM= false;
-const int TEST_SPEED = 3;
+const int TEST_SPEED = 1;
 const int TEST_MODE = 0;
 //const string TEST_FILE = "test33";
 //const string TEST_FILE = "simplebar";
-const string TEST_FILE = "Snowflake";
+const string TEST_FILE = "snowflake";
+//const string TEST_FILE = "StablePlateau";
 
 const int MAX_ROW = 70;
 const int MAX_COL = 90;
@@ -136,7 +138,6 @@ gridLifeT GridStart(bool isGetFile) {
             }
             else {
                 gridLife = GetGridFromFile(in1);
-                DrawGrid(gridLife);
                 in1.close();
                 break;
             }
@@ -144,8 +145,9 @@ gridLifeT GridStart(bool isGetFile) {
     }
     else {
         gridLife = GenerateRandomGrid();
-        DrawGrid(gridLife);
     }
+    InitLifeGraphics(gridLife.numRows(), gridLife.numCols());
+    DrawGrid(gridLife);
     return gridLife;
 }
 
@@ -184,8 +186,7 @@ gridLifeT GetGridFromFile(ifstream &in1) {
         }
     }
     
-    gridLife.lifeGrid = theGrid;
-    gridLife.size = gridSize;
+    gridLife = theGrid;
     return gridLife;
 }
 
@@ -203,18 +204,14 @@ void GetOneRow(string line, Grid<int> &theGrid, int currentRow) {
 
 gridLifeT GenerateRandomGrid() {
     gridLifeT gridLife;
-    gridSizeT gridSize;
     
     //cout << "Random Grid Generation." << endl;
     
-    gridSize.row = MAX_ROW;
-    gridSize.col = MAX_COL;
-    gridLife.size = gridSize;
-    gridLife.lifeGrid.resize(MAX_ROW, MAX_COL);
+    gridLife.resize(MAX_ROW, MAX_COL);
     
-    for (int i = 0; i < gridLife.size.row; i++) {
-        for (int j = 0; j < gridLife.size.col; j++)
-            gridLife.lifeGrid[i][j] = RandomInteger(0, 12);
+    for (int i = 0; i < gridLife.numRows(); i++) {
+        for (int j = 0; j < gridLife.numCols(); j++)
+            gridLife[i][j] = RandomInteger(0, 12);
     }
     return gridLife;
 }
