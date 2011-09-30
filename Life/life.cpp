@@ -5,6 +5,19 @@
 //  Created by Vince Mansel on 9/28/11.
 //  Copyright 2011 Wave Ocean Networks. All rights reserved.
 //
+
+/* 
+ * Life is a "Game of Life" simulator (originally conceived by
+ * the British mathematician J.H. Conway in 1970 and popularized by Martin Gardner in his
+ * Scientific American column)
+ *
+ * It operates on setup files or the grid can be seeded randomly.
+ * Basically, a cell on a grid either lives or dies based on it proximity to neighboring cells.
+ * 
+ * There are boundary cases which are covered in three modes: Plateau, Donut and Mirror.
+ * The game can be advanced manually or at three different simulation speeds.
+ *
+ */
  
 #include "genlib.h"
 #include "extgraph.h"
@@ -19,17 +32,22 @@
 #include <iostream>
 #include <fstream>
 
-const bool TEST_CASE = true;
-const bool TEST_RANDOM= false;
-const int TEST_SPEED = 1;
+const bool TEST_CASE = false;
+const bool TEST_RANDOM= true;
+const int TEST_SPEED = 4;
 const int TEST_MODE = 0;
 //const string TEST_FILE = "test33";
 //const string TEST_FILE = "simplebar";
-const string TEST_FILE = "snowflake";
+//const string TEST_FILE = "snowflake";
 //const string TEST_FILE = "StablePlateau";
+//const string TEST_FILE = "StableDonut";
+//const string TEST_FILE = "fish";
+//const string TEST_FILE = "Glider Explosion";
+const string TEST_FILE = "StableMirror";
 
 const int MAX_ROW = 70;
 const int MAX_COL = 90;
+
 
 void Welcome();
 bool AskForFile();
@@ -51,12 +69,12 @@ int main() {
     while (true) {
         gridLifeT gridLife = GridStart(AskForFile());
         if (TEST_CASE) {
-            RunLifeSim(TEST_SPEED, TEST_MODE, gridLife);
+            RunLifeSim(TEST_MODE, TEST_SPEED, gridLife);
         }
         else {
-            RunLifeSim(GetSimSpeed(), GetSimMode(), gridLife);
+            RunLifeSim(GetSimMode(), GetSimSpeed(), gridLife);
         }
-        bool anotherGame = AskForYesOrNo("Would you like to run another simulation? ");
+        bool anotherGame = AskForYesOrNo("\nWould you like to run another simulation? ");
         if (!anotherGame) {
             if (!TEST_CASE) break;
         }
@@ -77,11 +95,11 @@ void Welcome() {
 	cout << "\tLocations with 4 or more neighbors die of overcrowding" << endl;
 	cout << "In the animation, new cells are dark and lighten as they age." << endl;
 	cout << "Hit RETURN when ready: ";
-	//GetLine();
+	GetLine();
 }
 
 bool AskForFile() {
-    cout << "You can start your colony from random cells or read from a prepared file." << endl;
+    cout << endl << "You can start your colony from random cells or read from a prepared file." << endl;
     return AskForYesOrNo("Do you have a starting file in mind? ");
 }
 
@@ -144,6 +162,7 @@ gridLifeT GridStart(bool isGetFile) {
         }
     }
     else {
+        cout << "Okay, I will seed your colony randomly." << endl;
         gridLife = GenerateRandomGrid();
     }
     InitLifeGraphics(gridLife.numRows(), gridLife.numCols());
@@ -210,8 +229,12 @@ gridLifeT GenerateRandomGrid() {
     gridLife.resize(MAX_ROW, MAX_COL);
     
     for (int i = 0; i < gridLife.numRows(); i++) {
-        for (int j = 0; j < gridLife.numCols(); j++)
-            gridLife[i][j] = RandomInteger(0, 12);
+        for (int j = 0; j < gridLife.numCols(); j++) {
+            gridLife[i][j] = RandomInteger(0, 1);
+            if (gridLife[i][j] > 0) {
+                gridLife[i][j] = RandomInteger(1, 12);
+            }
+        }
     }
     return gridLife;
 }

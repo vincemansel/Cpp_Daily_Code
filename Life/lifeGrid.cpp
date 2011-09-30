@@ -29,7 +29,7 @@ const double FrameRateMuliplier = 0.1; // Fast Simulation
 const double FrameRateAdjustment = (1 / FrameRateMuliplier) * 0.25;
 
 void ShowGrid(gridLifeT &gridLife);
-bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int dRow, int dCol, int nRows, int nCols);
+bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int simMode,int dRow, int dCol, int nRows, int nCols);
 int CheckForNeighbors(gridLifeT &gridLife, int row, int col, int simMode, int nRows, int nCols);
 bool UpdateGrid(gridLifeT &gridLife, int simMode);
 
@@ -43,7 +43,7 @@ void DrawGrid(gridLifeT &gridLife) {
     //ShowGrid(gridLife);
 }
 
-void RunLifeSim(int simSpeed, int simMode, gridLifeT &gridLife) {
+void RunLifeSim(int simMode, int simSpeed, gridLifeT &gridLife) {
     //cout << "Stub for RunLifeSim(" << simSpeed << ", " << simMode << ", GRID= " << gridLife.size.row << ":" << gridLife.size.col << ")" << endl;
     cout << endl;
     
@@ -144,7 +144,7 @@ int CheckForNeighbors(gridLifeT &gridLife, int row, int col, int simMode, int nR
     
     for (int dRow = -1; dRow <= 1; dRow++) {
         for (int dCol = -1; dCol <= 1; dCol++) {
-            count += IsDirectionOccupied(gridLife, row, col, dRow, dCol, nRows, nCols);
+            count += IsDirectionOccupied(gridLife, row, col, simMode, dRow, dCol, nRows, nCols);
         }
     }
     return count;
@@ -176,13 +176,51 @@ bool OnBoard(int row, int col, int nRows, int nCols) {
  * Assuming that the origin (0,0) coincides with the lower left corner of
  * then board, IsDirectionOccupied must examine the coordinates * (row + dRow, col + dCol), (row + 2 * dRow, col + 2 * dCol)
  * to see if neighbors are adjacent.
+ *
+ * In Donut Mode, IsDirectionOccupied wraps the grid around like a torus to check "neighborship".
+ *
+ * In Mirror Mode, off the edge cells are a relection of what is on the grid.
  */
 
-bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int dRow, int dCol, int nRows, int nCols) {    
+bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int simMode,int dRow, int dCol, int nRows, int nCols) {    
     if ((dRow == 0) && (dCol == 0)) return false; // protect against bad call
     row += dRow;
     col += dCol;
-    return (OnBoard(row, col, nRows, nCols) && gridLife[row][col] > 0);
+    if (simMode == 0 ) { //|| row != 0 || col != 0) { // Plateau
+        return (OnBoard(row, col, nRows, nCols) && gridLife[row][col] > 0);
+    }
+    else if (simMode == 1) { // Donut
+        if (row < 0) {
+            row = nRows - 1;
+        }
+        else if (row == nRows) {
+            row = 0;
+        }
+        if (col < 0) {
+            col = nCols - 1;
+        }
+        else if (col == nCols) {
+            col = 0;
+        }
+    }
+    else if (simMode == 2) { // Mirror
+        if (row < 0) {
+            row = 0;
+        }
+        else if (row == nRows) {
+            row = nRows - 1;
+        }
+        if (col < 0) {
+            col = 0;
+        }
+        else if (col == nCols) {
+            col = nCols - 1;
+        }
+    }
+    else {
+        Error("Bad simMode detected");
+    }
+    return (gridLife[row][col] > 0);
 }
 
 

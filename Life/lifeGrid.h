@@ -32,6 +32,6 @@ void DrawGrid(gridLifeT &gridLife);
  * Handles the various modes of the game and kicks off the life simulation
  */
 
-void RunLifeSim(int simSpeed, int simMode, gridLifeT &gridLife);
+void RunLifeSim(int simMode, int simSpeed, gridLifeT &gridLife);
 
 #endif
