@@ -33,19 +33,45 @@ bool IsDirectionOccupied(gridLifeT &gridLife, int row, int col, int simMode,int 
 int CheckForNeighbors(gridLifeT &gridLife, int row, int col, int simMode, int nRows, int nCols);
 bool UpdateGrid(gridLifeT &gridLife, int simMode);
 
-void DrawGrid(gridLifeT &gridLife) {
+void DrawGridX(gridLifeT &gridLife) {
     int rows = gridLife.numRows();
     int cols = gridLife.numCols();
     InitGraphics(); // Slightly faster
     //InitLifeGraphics(rows, cols);
     for (int i = 0; i < rows; i++)
         for (int j = 0; j < cols; j++) {
-            if (gridLife[i][j] != 0) {  // DrawCellAt is an expensive operation, CPU-wise. Only use for cells with life, not empty cells.
+            //if (gridLife[i][j] != 0) {  // DrawCellAt is an expensive operation, CPU-wise.
+                                        // Only use for cells with life, not empty cells.
                 DrawCellAt(i, j, gridLife[i][j]);
-            }
+            //}
         }
     //ShowGrid(gridLife);
 }
+
+
+void DrawGrid1(gridLifeT &gridLife) {
+    int rows = gridLife.numRows();
+    int cols = gridLife.numCols();
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++) {
+            DrawCellAt(i, j, gridLife[i][j]);
+        }
+}
+
+void DrawGrid(gridLifeT &gridLife) {
+    int rows = gridLife.numRows();
+    int cols = gridLife.numCols();
+    InitGraphics(); // Flushes the graphics palette
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++) {
+            if (gridLife[i][j] != 0) {  
+                // DrawCellAt is an expensive operation, CPU-wise.
+                // Only use for cells with life, not empty cells.
+                DrawCellAt(i, j, gridLife[i][j]);
+            }
+        }
+}
+
 
 void RunLifeSim(int simMode, int simSpeed, gridLifeT &gridLife) {
     //cout << "Stub for RunLifeSim(" << simSpeed << ", " << simMode << ", GRID= " << gridLife.size.row << ":" << gridLife.size.col << ")" << endl;
