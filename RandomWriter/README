@@ -1,0 +1,12 @@
+/*
+ * RandomWriter generates random prose by analyzing a text with a given Markov
+ * length which defines the number of characters in key string. For each key, the
+ * following character is tracked. The longest key becomes the starting seed of the
+ * prose. The next character is determined by its frequency of occurence after the
+ * seed. The next seed is therefore the seed (minus its first char) + nextChar.
+ * 
+ * MaxChars (2000) characters are printed for the prose.
+ *
+ * See http://en.wikipedia.org/wiki/Markov_chain for more information.
+ */
+
