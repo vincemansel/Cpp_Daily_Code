@@ -32,7 +32,7 @@ void PrintPath(PathStackT path) {
 }
 
 void MarkPath(Maze &maze, PathStackT path) {
-    maze.draw();
+    //maze.draw();
     //cout << "Current Path" << endl;
     while (!path.isEmpty()) {
         maze.drawMark(path.pop(), "Red");
@@ -76,7 +76,7 @@ void Solve(Maze &maze, GridOfCells &cells) {
         PathStackT path = store.dequeue();
         //PrintPath(path);
         currentPath = path;
-        MarkPath(maze, currentPath);
+        //MarkPath(maze, currentPath);
         current = path.pop();
         
         //PrintPoint(current);
@@ -84,6 +84,7 @@ void Solve(Maze &maze, GridOfCells &cells) {
         
         if (IsSame(goal, current)) {
             cout << "Reached Goal" << endl;
+            MarkPath(maze, currentPath);
             break;
         }
         

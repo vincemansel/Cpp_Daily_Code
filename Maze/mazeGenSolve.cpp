@@ -25,7 +25,7 @@ pointT ChooseRandomNeighbor(pointT current, int numRows, int numCols);
 int IncludeNeighbor(Maze &maze, GridOfCells &cells, pointT current, pointT neighbor);
 
 int main() {
-    Randomize();
+    //Randomize();
 
     while (true) {
 		int numRows = GetMazeDimension("What should the X dimension of your maze be [0 to exit]? ");
@@ -113,8 +113,8 @@ void PrintCells(GridOfCells &cells) {
 
 pointT GetRandomPoint(int numRows, int numCols) {
     pointT p;
-    p.row = RandomInteger(0, numRows);
-    p.col = RandomInteger(0, numCols);
+    p.row = RandomInteger(0, numRows - 1);
+    p.col = RandomInteger(0, numCols - 1);
     return p;
 }
 
