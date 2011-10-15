@@ -15,35 +15,80 @@ struct CellT {
     int value;
 };
 
+Vector<int> GetVector(string message);
 CellT * ConvertToListR(Vector<int> &vector);
 CellT * ConvertToListI(Vector<int> vector);
 void PrintLinkedList(CellT * list);
 void Deallocate(CellT *list);
 int SumList(CellT *list);
+void AppendList(CellT * &list1, CellT * &list2);
 
 int main () {
     
-    Vector<int> vector;
-    CellT * myLinkedList = NULL;
-    
     while (true) {
-        cout << "Give me a list of numbers (-1 to quit): " << endl;
-        int number;
-        while (true) {
-            cout << "Enter a number (-1 to quit): ";
-            number = GetInteger();
-            if (number == -1) break;
-            vector.add(number);
-        }
-        //myLinkedList = ConvertToListR(vector);
-        myLinkedList = ConvertToListR(vector);
-        PrintLinkedList(myLinkedList);
-        cout << SumList(myLinkedList) << endl;
-        //vector.clear();
-        Deallocate(myLinkedList);
+        CellT * list1 = NULL;
+        CellT * list2 = NULL;
+        
+        Vector<int> vector1 = GetVector("Give me a 1st list of numbers (-1 to quit)");
+        list1 = ConvertToListR(vector1);
+        PrintLinkedList(list1);
+        cout << SumList(list1) << endl;
+        
+        Vector<int> vector2 = GetVector("Give me a 2nd list of numbers (-1 to quit)");
+        list2 = ConvertToListR(vector2);
+        PrintLinkedList(list2);
+        cout << SumList(list2) << endl;
+        
+        cout << "Appending the list now..." << endl;
+        AppendList(list1, list2);
+        PrintLinkedList(list1);
+        cout << SumList(list1) << endl;
+        
+        vector1.clear();
+        vector2.clear();
+        Deallocate(list1);
+        //Deallocate(list2);
+        
+        cout << "******************** OK WE ARE DONE **********************" << endl;
     }
     
     return 0;
+}
+
+Vector<int> GetVector(string message) {
+    Vector<int> vector;
+    cout << message << endl;
+    int number;
+    while (true) {
+        cout << "Enter a number (-1 to quit): ";
+        number = GetInteger();
+        if (number == -1) break;
+        vector.add(number);
+    } 
+    
+    return vector;
+}
+
+void AppendListRec(CellT * &list1, CellT * &list2) {
+    
+    if (list1->next == NULL) {
+        list1->next = list2;
+    }
+    else {
+        list1 = list1->next;
+        AppendListRec(list1, list2);
+    }
+}
+
+void AppendList(CellT * &list1, CellT * &list2) {
+    
+    if (list1 == NULL) {
+        list1 = list2;
+        return;
+    }
+
+    CellT * listHead = list1;
+    AppendListRec(listHead, list2);
 }
 
 int SumList(CellT *list) {
