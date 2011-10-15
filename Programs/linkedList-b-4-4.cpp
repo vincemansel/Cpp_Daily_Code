@@ -22,6 +22,7 @@ void PrintLinkedList(CellT * list);
 void Deallocate(CellT *list);
 int SumList(CellT *list);
 void AppendList(CellT * &list1, CellT * &list2);
+void Append(CellT *& first, CellT* second);
 
 int main () {
     
@@ -40,7 +41,8 @@ int main () {
         cout << SumList(list2) << endl;
         
         cout << "Appending the list now..." << endl;
-        AppendList(list1, list2);
+        //AppendList(list1, list2);
+        Append(list1, list2);
         PrintLinkedList(list1);
         cout << SumList(list1) << endl;
         
@@ -67,6 +69,18 @@ Vector<int> GetVector(string message) {
     } 
     
     return vector;
+}
+
+void Append(CellT *& first, CellT * second)
+{
+    if (first == NULL)
+    {
+        first = second;
+    }
+    else
+    {
+        Append(first->next, second);
+    }
 }
 
 void AppendListRec(CellT * &list1, CellT * &list2) {
