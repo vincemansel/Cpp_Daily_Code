@@ -192,22 +192,31 @@ bool HasVisited(int row, int col, pointT * tracker) {
     return false;
 }
 
+void PrintLinkedList(pointT * list) {
+    if (list == NULL) {
+        return;
+    }
+    cout << list->row << ":" << list->col << endl;
+    PrintLinkedList(list->next);
+}
 
 void ReVisitAndHightlight( pointT * tracker ) {
     if (tracker != NULL) {
-        
-        HighlightCube(tracker->row, tracker->col, true);
-        Pause(1.0);
-        HighlightCube(tracker->row, tracker->col, false);
         ReVisitAndHightlight(tracker->next);
+        HighlightCube(tracker->row, tracker->col, true);
+        Pause(0.25);
+        HighlightCube(tracker->row, tracker->col, false);
+        Pause(0.25);
     }
 }
 
 bool RecursiveOnBoard(Grid<cubeT> & board, string soFar, string rest, int row, int col, pointT * tracker) {
     
+    PrintLinkedList(tracker);
     if (HasVisited(row, col, tracker)) return false;
     
     if (rest.length() == 0) {
+        PrintLinkedList(tracker);
         ReVisitAndHightlight(tracker);
         return true;
     }
@@ -218,8 +227,8 @@ bool RecursiveOnBoard(Grid<cubeT> & board, string soFar, string rest, int row, i
                 if (board[row+dx][col+dy].letter == rest[0]) {
                     pointT * tracker2 = new pointT;
                     tracker2->next = tracker;       // tracker2 is now the listHead point back up the call chain
-                    tracker2->row = row;
-                    tracker2->col = col;
+                    tracker2->row = row+dx;
+                    tracker2->col = col+dy;
                     
                     soFar += rest[0];
                     
