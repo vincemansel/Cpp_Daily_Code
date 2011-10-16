@@ -5,6 +5,8 @@
 //  Created by Vince Mansel on 10/14/11.
 //  Copyright 2011 Wave Ocean Software. All rights reserved.
 //
+
+// Boggle - the game!
  
 #include "genlib.h"
 #include "simpio.h"
